@@ -1,52 +1,58 @@
 import os
-import streamlit as st
+import subprocess
+import yt_dlp
 from google import genai
 
-st.set_page_config(page_title="YouTube Reels AI Factory", page_icon="🎬", layout="centered")
+# جلب مفتاح الذكاء الاصطناعي
+api_key = os.environ.get("GEMINI_API_KEY")
 
-st.markdown("<h1 style='text-align: center;'>🎬 مصنع الريلز الذكي ليوتيوب</h1>", unsafe_allow_html=True)
-st.write("---")
-st.write("أدخل عنوان الفيديو أو فكرته، وسيقوم الذكاء الاصطناعي بتحليله وتصميم أفكار الـ Reels الاحترافية فوراً.")
+def process_real_reel(youtube_url, start_seconds=10, duration=30):
+    print(f"🚀 بدء الاتصال وتحميل بيانات الفيديو: {youtube_url}")
+    
+    # 1. استخدام yt-dlp لاستخراج رابط البث المباشر للفيديو دون تحميل الملف بالكامل ببطء
+    ydl_opts = {'format': 'best[ext=mp4]/best'}
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(youtube_url, download=False)
+            video_stream_url = info['url']
+            video_title = info.get('title', 'فيديو يوتيوب')
+            print(f"✨ تم العثور على الفيديو بنجاح: {video_title}")
+    except Exception as e:
+        print(f"❌ فشل في جلب الفيديو: {e}")
+        return
 
-# جلب المفتاح الآمن (يدعم إعدادات الويب وإعدادات السيرفر)
-api_key = None
-try:
-    api_key = st.secrets.get("GEMINI_API_KEY")
-except Exception:
-    pass
-
-if not api_key:
-    api_key = os.environ.get("GEMINI_API_KEY")
-
-video_title = st.text_input("عنوان الفيديو أو الرابط:", placeholder="مثال: سر الاحتراف في المونتاج وكيف تطور قناتك...")
-
-if st.button("🚀 ابدأ استخراج أفكار الريلز", type="primary"):
-    if not api_key:
-        st.error("الرجاء إضافة مفتاح Gemini API في إعدادات التطبيق.")
-    elif not video_title:
-        st.error("الرجاء كتابة عنوان الفيديو أولاً.")
+    # 2. استخدام FFmpeg (المثبت مسبقاً على السيرفر) لقص الفيديو وتحويله لمقاس Reels (9:16) عمودي
+    output_filename = "final_reel.mp4"
+    
+    # أمر المونتاج والقص:
+    # -ss: وقت البداية بالثواني
+    # -t: المدة المطلوبة للمقاطع (مثلاً 30 ثانية)
+    # -vf "crop=ih*9/16:ih": قص العرض تلقائياً ليصبح عمودياً 9:16 بغض النظر عن أبعاد الفيديو الأصلي
+    ffmpeg_cmd = [
+        'ffmpeg',
+        '-ss', str(start_seconds),
+        '-i', video_stream_url,
+        '-t', str(duration),
+        '-vf', 'crop=ih*9/16:ih',
+        '-c:v', 'libx264',
+        '-c:a', 'aac',
+        '-y',
+        output_filename
+    ]
+    
+    print("🎬 جاري قص الفيديو ومونتاجه عمودياً عبر FFmpeg...")
+    result = subprocess.run(ffmpeg_cmd, captureoutput=True, text=True)
+    
+    if result.returncode == 0:
+        print(f"✅ تم إنتاج الـ Reel بنجاح تام! الملف الناتج: {output_filename}")
+        # هنا سيتم لاحقاً حفظه أو رفعه، الملف جاهز الآن كملف فيديو حقيقي `.mp4`
     else:
-        with st.spinner("جاري الاتصال بالسحابة وتحليل المحتوى بعين المخرج..."):
-            try:
-                client = genai.Client(api_key=api_key)
-                
-                prompt = (
-                    f"أنت خبير محتوى ومونتاج سينمائي. بناءً على فيديو يوتيوب عنوانه: '{video_title}', "
-                    "اقترح أفضل 3 أجزاء/لقطات مثيرة وجذابة يمكن تحويلها إلى مقاطع Reels قصيرة، "
-                    "مع تحديد جملة الجذب (Hook)، وسبب الاختيار، وطريقة العرض."
-                )
-                
-                response = client.models.generate_content(
-                    model='gemini-3.6-flash',
-                    contents=prompt
-                )
-                
-                st.success("✨ تم إنشاء أفكار الريلز بنجاح!")
-                st.markdown("### النتائج المقترحة:")
-                st.markdown(response.text)
-                
-            except Exception as e:
-                st.error(f"حدث خطأ أثناء الاتصال: {e}")
+        print(f"❌ حدث خطأ أثناء المونتاج والقص:")
+        print(result.stderr)
 
-st.write("---")
-st.caption("تم تطوير هذا التطبيق خصيصاً لأتمتة صناعة المحتوى بسلاسة.")
+if __name__ == "__main__":
+    # رابط فيديو تجريبي من يوتيوب لتجربة القص الفعلي
+    test_youtube_url = "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+    
+    # قص مقطع يبدأ من الثانية 5 ولمدة 15 ثانية وتحويله لـ Reel
+    process_real_reel(test_youtube_url, start_seconds=5, duration=15)

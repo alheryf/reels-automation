@@ -1,19 +1,15 @@
 import os
 import google.generativeai as genai
 
-# قراءة مفتاح الذكاء الاصطناعي من الإعدادات الآمنة
 API_KEY = os.environ.get("GEMINI_API_KEY")
-genai.configure(api_key=API_KEY)
+print(f"طول مفتاح الـ API الموجود: {len(API_KEY) if API_KEY else 'غير موجود'}")
 
-def analyze_video_with_ai(video_title):
-    print(f"جارٍ تحليل الفيديو ذكياً: {video_title}")
-    # استخدام نموذج فلاش الأحدث
+try:
+    genai.configure(api_key=API_KEY)
+    print("محاولة الاتصال بالذكاء الاصطناعي...")
     model = genai.GenerativeModel('gemini-1.5-flash')
-    prompt = f"اقترح أفضل 3 أجزاء مثيرة في فيديو يوتيوب عنوانه: {video_title} لتحويلها إلى مقاطع Reels قصيرة."
-    response = model.generate_content(prompt)
-    print("نتيجة تحليل الذكاء الاصطناعي:")
+    response = model.generate_content("مرحباً، اختبار اتصال بسيط")
+    print("✨ نجح الاتصال والرد بنجاح:")
     print(response.text)
-
-if __name__ == "__main__":
-    print("بدء تشغيل نظام الأتمتة السحابي بنجاح...")
-    analyze_video_with_ai("فيديو تجريبي للاختبار المؤتمت")
+except Exception as e:
+    print(f"❌ حدث خطأ تفصيلي: {e}")

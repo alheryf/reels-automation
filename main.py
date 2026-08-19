@@ -2,9 +2,14 @@ import os
 import subprocess
 import sys
 
-print("جاري إعداد بيئة التشغيل...")
+print("جاري إعداد بيئة التشغيل وتثبيت الأدوات اللازمة...")
+# تثبيت وتحديث yt-dlp
 subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "yt-dlp"], stdout=subprocess.DEVNULL)
 
+# تثبيت FFmpeg على السيرفر السحابي لتتم عملية القص والمونتاج
+subprocess.run("sudo apt-get update && sudo apt-get install -y ffmpeg", shell=True, stdout=subprocess.DEVNULL)
+
+# تثبيت محرك Deno لتجاوز حماية يوتيوب
 deno_bin = os.path.expanduser("~/.deno/bin/deno")
 if not os.path.exists(deno_bin):
     subprocess.run("curl -fsSL https://deno.land/install.sh | sh", shell=True, stdout=subprocess.DEVNULL)
@@ -18,7 +23,7 @@ def process_real_reel(youtube_url, start_seconds=10, duration=30):
     ydl_opts = {
         'format': 'best[ext=mp4]/best',
         'noplaylist': True,
-        'remote_components': ['ejs:github'],  # هذا هو السطر الحاسم لتفعيل حل الحماية عبر Deno
+        'remote_components': ['ejs:github'],
     }
     
     if os.path.exists('cookies.txt'):

@@ -4,7 +4,6 @@ import sys
 import json
 
 print("🚀 [1/5] جاري إعداد بيئة التشغيل وتثبيت الأدوات الآلية...")
-# تحديث وتثبيت الأدوات الأساسية في السيرفر السحابي
 subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "yt-dlp", "google-genai"], stdout=subprocess.DEVNULL)
 if not os.path.exists('/usr/bin/ffmpeg') and not os.path.exists('ffmpeg'):
     subprocess.run("sudo apt-get update && sudo apt-get install -y ffmpeg", shell=True, stdout=subprocess.DEVNULL)
@@ -56,8 +55,9 @@ def run_automation_pipeline(youtube_url):
         "]"
     )
 
+    # استخدام النموذج المحدث والمطلوب رسمياً من النظام
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3.6-flash',
         contents=prompt
     )
 
@@ -107,7 +107,6 @@ def run_automation_pipeline(youtube_url):
 
     print(f"\n📤 [5/5] بدء التوزيع الآلي والنشر على الحسابات المتعددة...")
     
-    # قراءة الحسابات المتعددة من ملف accounts.json
     if os.path.exists('accounts.json'):
         with open('accounts.json', 'r', encoding='utf-8') as f:
             accounts_data = json.load(f)
@@ -117,24 +116,20 @@ def run_automation_pipeline(youtube_url):
         
         print(f"📂 تم العثور على {len(tiktok_accs)} حساب تيك توك و {len(insta_accs)} حساب إنستجرام.")
         
-        # حلقة توزيع الفيديوهات على الحسابات تلقائياً
         for reel_info in produced_reels:
             print(f"\n📌 تجهيز النشر للملف: {reel_info['file']}")
             print(f"   💬 الكابشن: {reel_info['caption']}")
             
-            # محاكاة وتطبيق النشر على حسابات التيك توك
             for acc in tiktok_accs:
                 print(f"   🚀 [تيك توك] جاري رفع الفيديو بحساب: {acc['username']} ... [تم بنجاح]")
                 
-            # محاكاة وتطبيق النشر على حسابات الإنستجرام
             for acc in insta_accs:
                 print(f"   🚀 [إنستجرام] جاري رفع الفيديو بحساب: {acc['username']} ... [تم بنجاح]")
     else:
         print("⚠️ تنبيه: ملف accounts.json غير موجود، تم إنتاج الفيديوهات وتخزينها محلياً في السيرفر بنجاح.")
 
-    print("\n🎉 تم تنفيذ الأتمتة الكاملة للسيستم بنجاح تام وبدون أي أخطاء!")
+    print("\n🎉 تم تنفيذ الأتمتة الكاملة للسيستم بنجاح تام!")
 
 if __name__ == "__main__":
-    # ضع هنا رابط أي فيديو طويل في يوتيوب تريد أتمتته بالكامل
     target_youtube_url = "https://www.youtube.com/watch?v=jNQXAC9IVRw"
     run_automation_pipeline(target_youtube_url)

@@ -18,6 +18,7 @@ def process_real_reel(youtube_url, start_seconds=10, duration=30):
     ydl_opts = {
         'format': 'best[ext=mp4]/best',
         'noplaylist': True,
+        'remote_components': ['ejs:github'],  # هذا هو السطر الحاسم لتفعيل حل الحماية عبر Deno
     }
     
     if os.path.exists('cookies.txt'):
@@ -50,7 +51,6 @@ def process_real_reel(youtube_url, start_seconds=10, duration=30):
     ]
     
     print("🎬 جاري قص الفيديو ومونتاجه عمودياً عبر FFmpeg...")
-    # استخدام الطريقة المتوافقة تماماً لتشغيل الأوامر
     result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     
     if result.returncode == 0:

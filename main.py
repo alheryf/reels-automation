@@ -1,13 +1,13 @@
 import os
 import subprocess
 
-# 1. تثبيت محرك Deno تلقائياً في السيرفر لتجاوز حماية يوتيوب فوراً
+# 1. تثبيت محرك Deno تلقائياً
 deno_bin = os.path.expanduser("~/.deno/bin/deno")
 if not os.path.exists(deno_bin):
-    print("جاري تثبيت محرك JavaScript (Deno) لتجاوز تشفير يوتيوب...")
+    print("جاري تثبيت محرك JavaScript (Deno)...")
     subprocess.run("curl -fsSL https://deno.land/install.sh | sh", shell=True)
 
-# إضافة Deno لمسار التنفيذ في السيرفر
+# إضافة Deno لمسار التنفيذ
 os.environ["PATH"] += f":{os.path.expanduser('~/.deno/bin')}"
 
 import yt_dlp
@@ -15,8 +15,10 @@ import yt_dlp
 def process_real_reel(youtube_url, start_seconds=10, duration=30):
     print(f"🚀 بدء الاتصال وتحميل بيانات الفيديو: {youtube_url}")
     
+    # إعدادات متقدمة لتجاوز حماية يوتيوب باستخدام Deno والمكونات عن بعد
     ydl_opts = {
         'format': 'best[ext=mp4]/best',
+        'remote_components': ['ejs:github'], # تفعيل حل التحديات الأمنية عبر Deno
     }
     
     if os.path.exists('cookies.txt'):
@@ -35,7 +37,7 @@ def process_real_reel(youtube_url, start_seconds=10, duration=30):
 
     output_filename = "final_reel.mp4"
     
-    # أمر مونتاج وقص الفيديو للأبعاد العمودية (9:16)
+    # أمر قص ومونتاج الفيديو للأبعاد العمودية (9:16) عبر FFmpeg
     ffmpeg_cmd = [
         'ffmpeg',
         '-ss', str(start_seconds),

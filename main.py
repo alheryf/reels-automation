@@ -7,13 +7,13 @@ genai.configure(api_key=API_KEY)
 
 def analyze_video_with_ai(video_title):
     print(f"جارٍ تحليل الفيديو ذكياً: {video_title}")
-    # استخدام النموذج الأساسي المعتمد لضمان عدم وجود أخطاء توافق
-    model = genai.GenerativeModel('gemini-pro')
+    # استخدام نموذج فلاش الأحدث
+    model = genai.GenerativeModel('gemini-1.5-flash')
     prompt = f"اقترح أفضل 3 أجزاء مثيرة في فيديو يوتيوب عنوانه: {video_title} لتحويلها إلى مقاطع Reels قصيرة."
     response = model.generate_content(prompt)
     print("نتيجة تحليل الذكاء الاصطناعي:")
     print(response.text)
 
 if __name__ == "__main__":
-    print("بدء تشغيل نظام الأتمتة السحابي...")
+    print("بدء تشغيل نظام الأتمتة السحابي بنجاح...")
     analyze_video_with_ai("فيديو تجريبي للاختبار المؤتمت")

@@ -1,0 +1,9 @@
+{
+  "tiktok_accounts": [
+    {"username": "my_tiktok_account_1", "cookie_file": "cookies_tiktok_1.txt"},
+    {"username": "my_tiktok_account_2", "cookie_file": "cookies_tiktok_2.txt"}
+  ],
+  "instagram_accounts": [
+    {"username": "my_insta_account_1", "cookie_file": "cookies_insta_1.txt"}
+  ]
+}

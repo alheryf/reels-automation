@@ -7,8 +7,8 @@ genai.configure(api_key=API_KEY)
 
 def analyze_video_with_ai(video_title):
     print(f"جارٍ تحليل الفيديو ذكياً: {video_title}")
-    # استخدام النموذج المحدث
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # استخدام النموذج الأساسي المعتمد لضمان عدم وجود أخطاء توافق
+    model = genai.GenerativeModel('gemini-pro')
     prompt = f"اقترح أفضل 3 أجزاء مثيرة في فيديو يوتيوب عنوانه: {video_title} لتحويلها إلى مقاطع Reels قصيرة."
     response = model.generate_content(prompt)
     print("نتيجة تحليل الذكاء الاصطناعي:")

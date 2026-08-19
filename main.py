@@ -1,15 +1,29 @@
 import os
 import google.generativeai as genai
 
+# قراءة مفتاح الذكاء الاصطناعي من الإعدادات الآمنة
 API_KEY = os.environ.get("GEMINI_API_KEY")
-print(f"طول مفتاح الـ API الموجود: {len(API_KEY) if API_KEY else 'غير موجود'}")
+genai.configure(api_key=API_KEY)
 
-try:
-    genai.configure(api_key=API_KEY)
-    print("محاولة الاتصال بالذكاء الاصطناعي...")
+def analyze_video_with_ai(video_title):
+    print(f"🎬 جارٍ تحليل الفيديو ذكياً: {video_title}")
+    
+    # استخدام نموذج فلاش الأحدث والأسرع
     model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content("مرحباً، اختبار اتصال بسيط")
-    print("✨ نجح الاتصال والرد بنجاح:")
+    
+    prompt = (
+        f"أنت خبير محتوى ومونتاج. بناءً على عنوان فيديو اليوتيوب التالي: '{video_title}', "
+        "اقترح أفضل 3 أجزاء/لقطات مثيرة وجذابة يمكن تحويلها إلى مقاطع Reels قصيرة تناسب منصات التواصل، "
+        "مع توضيح سبب اختيار كل جزء."
+    )
+    
+    response = model.generate_content(prompt)
+    print("\n✨ نتيجة تحليل الذكاء الاصطناعي واقتراحات الريلز:")
+    print("-" * 50)
     print(response.text)
-except Exception as e:
-    print(f"❌ حدث خطأ تفصيلي: {e}")
+    print("-" * 50)
+
+if __name__ == "__main__":
+    print("🚀 بدء تشغيل نظام أتمتة يوتيوب وسحابياً بنجاح...")
+    # يمكنك تغيير العنوان لاحقاً بالفيديو الذي تريده
+    analyze_video_with_ai("سر النجاح في صناعة المحتوى وكيف تطور قناتك بسرعة")
